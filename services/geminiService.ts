@@ -55,7 +55,7 @@ const getInitialPrompt = (language: Language, scenario: Scenario, narrativeMode:
   };
   
   const narrativeStyle = narrativeMode === 'complete' 
-    ? "verbose, rich, and descriptive" 
+    ? "detailed and descriptive" 
     : "concise and to-the-point";
 
   let upgradeText = "";
@@ -67,20 +67,21 @@ const getInitialPrompt = (language: Language, scenario: Scenario, narrativeMode:
   }
 
   return `
-You are a Dungeon Master for a text adventure. Your narrative style will be ${narrativeStyle}.
+You are a Dungeon Master for a text adventure. Your goal is to create a story that is easy to understand, clear, and direct.
 The player is a human summoned to a fantasy world under threat from a Demon King's army.
-The core principle is "Show, Don't Tell". Player condition and stats are described through the story.
+Your narrative style should be ${narrativeStyle}. However, ALWAYS prioritize clarity over literary flair. Use simple sentence structures and common vocabulary.
+Describe what the player sees, hears, and feels in a straightforward manner. Instead of abstract descriptions, focus on concrete details.
 The story begins with this scenario: ${scenarioPrompts[scenario]}.
 
 PLAYER'S APPEARANCE: ${characterDescription}. Describe the player character in the opening scene using these details.
 ${upgradeText ? `\nPLAYER UPGRADES: ${upgradeText}` : ''}
 
-Generate a highly unique and creative starting scene. Avoid common fantasy clichés. The player has likely been summoned in other "lives", so make this time feel different and unexpected.
+Generate a clear and engaging starting scene. Use straightforward language.
 
 Your response MUST be a valid JSON object in ${languageNames[language]}.
 The JSON object must have this exact structure:
 {
-  "situation": "A description of the starting scene, matching the narrative style. Weave in the player's appearance and any upgrades they have.",
+  "situation": "A clear, direct, and easy-to-understand description of the starting scene. Mention the player's appearance and any upgrades they have.",
   "choices": [
     {"type": "button", "text": "A description of the first possible action."},
     {"type": "input", "text": "A prompt asking for the character's name.", "placeholder": "Enter your name..."}
@@ -109,15 +110,16 @@ The JSON object must have this exact structure:
 
 const getFollowUpPrompt = (previousSituation: string, previousEnemy: Enemy | null, playerState: PlayerState, playerChoiceText: string, language: Language, narrativeMode: NarrativeMode, history: string[]): string => {
   const narrativeStyle = narrativeMode === 'complete' 
-    ? "verbose, rich, and descriptive" 
+    ? "detailed and descriptive" 
     : "concise, fast-paced, and to-the-point";
   
   const inCombat = !!previousEnemy;
 
   return `
-You are a Dungeon Master continuing a text adventure. Your narrative style is ${narrativeStyle}.
-The core principle is "Show, Don't Tell". Player state is revealed through storytelling.
-The player's action indicates their INTENT. If they declared a dice roll result, narrate the outcome of that success or failure.
+You are a Dungeon Master continuing a text adventure. Your main goal is to make the story easy to understand, clear, and direct.
+Your narrative style is ${narrativeStyle}, but ALWAYS prioritize clarity over literary flair. Use simple language and concrete details.
+Describe the direct consequences of the player's actions.
+The player's action indicates their INTENT. If they declared a dice roll result, narrate the outcome of that success or failure clearly.
 
 CONTEXT:
 - PLAYER'S APPEARANCE: ${playerState.characterDescription}
@@ -129,7 +131,7 @@ ${previousEnemy ? `- CURRENT ENEMY: ${JSON.stringify(previousEnemy)}` : ''}
 YOUR TASK:
 Continue the story based on the player's action and state.
 - **Pacing & Difficulty:** The story should build towards a climax or conclusion within about 15-20 turns. The current turn is ${playerState.turn}. The world difficulty is ${playerState.worldDifficulty}/10, adjust the challenge accordingly.
-- **Creativity & Cohesion:** To avoid repetition, here are the last few situations the player has been in: ${JSON.stringify(history)}. Do NOT repeat these scenarios or ideas. Generate something new and unexpected that moves the story forward logically.
+- **Clarity & Cohesion:** The next part of the story must be a logical consequence of the player's action. To avoid repetition, here are the last few situations the player has been in: ${JSON.stringify(history)}. Do not repeat these exact scenarios.
 - **Luck Events:** Based on the player's 'luck' attribute (${playerState.attributes.luck}), you can RARELY trigger a random event. This should NOT happen on every turn. High luck (12+) can cause positive events (e.g., finding a hidden pouch of coins, a weapon suddenly feeling lighter). Low luck (8-) can cause negative events (e.g., tripping on a root, a strap on your bag breaking). Neutral events can be strange visions or omens. If you trigger an event, add a 'luckEvent' object to your response, and the 'situation' you write MUST seamlessly incorporate this event.
 - **Image Generation:** Set "generateImage" to true ONLY for visually striking, pivotal, or cinematic moments focusing on landscapes, architecture, or atmospheric scenes. Examples: discovering a lost city, entering a magical forest, seeing a castle for the first time. Do NOT generate images for simple dialogue, minor actions, or combat.
 - **Combat:** If in combat (${inCombat}), this is a combat turn. The player has used the move: "${playerChoiceText}". Narrate the outcome of the player's move and the enemy's counter-attack. Update HP for both. If the enemy's HP is <= 0, describe their defeat and set 'enemy' to null. If the player's HP is <= 0, the game is over.
@@ -148,7 +150,7 @@ Continue the story based on the player's action and state.
 
 Your response MUST be a valid JSON object in ${languageNames[language]} with this exact structure (luckEvent is optional):
 {
-  "situation": "A vivid description of what happens next, matching the narrative style. If a luck event occurs, it should be described here.",
+  "situation": "A clear and direct description of what happens next. Use simple language. Describe the outcome of the player's action and what they see now. If a luck event occurs, it should be described here.",
   "choices": [
     {"type": "button", "text": "A plausible first action for the player."},
     {"type": "button", "text": "A plausible second action for the player."}
