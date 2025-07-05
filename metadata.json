@@ -1,6 +1,6 @@
-
 {
   "name": "Earth of Dungeons",
   "description": "A dynamic, AI-powered text adventure where you play as a human summoned to a magical world. Your choices shape your destiny in this ever-changing narrative.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "prompt": ""
 }
