@@ -1,9 +1,18 @@
 
+
 import React from 'react';
 import { useGame } from '../GameContext.tsx';
 import { useLanguage } from '../LanguageContext.tsx';
 import { translations } from '../translations.ts';
 import LoadingSpinner from './LoadingSpinner.tsx';
+import { motion } from 'framer-motion';
+
+const screenVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3, ease: "easeIn" } }
+} as const;
+
 
 const WorldBriefingScreen: React.FC = () => {
     const { state, dispatch } = useGame();
@@ -23,7 +32,13 @@ const WorldBriefingScreen: React.FC = () => {
     const { worldName, worldDifficulty } = storyNode;
 
     return (
-        <div className="bg-gray-900 bg-opacity-80 backdrop-blur-sm p-8 rounded-xl shadow-2xl text-center flex flex-col items-center max-w-md mx-auto animate-fade-in">
+        <motion.div 
+            className="bg-gray-900 bg-opacity-80 backdrop-blur-sm p-8 rounded-xl shadow-2xl text-center flex flex-col items-center max-w-md mx-auto"
+            variants={screenVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+        >
             <h1 className="text-3xl font-bold font-serif text-amber-300 mb-6">{t.briefing_title}</h1>
             
             <div className="space-y-4 mb-8 text-lg w-full">
@@ -45,7 +60,7 @@ const WorldBriefingScreen: React.FC = () => {
             >
                 {t.briefing_begin}
             </button>
-        </div>
+        </motion.div>
     );
 };
 

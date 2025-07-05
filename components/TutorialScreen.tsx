@@ -1,12 +1,21 @@
 
+
+
 import React from 'react';
 import { useLanguage } from '../LanguageContext.tsx';
 import { useGame } from '../GameContext.tsx';
 import { translations } from '../translations.ts';
+import { motion } from 'framer-motion';
+
+const screenVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } }
+} as const;
 
 const TutorialScreen: React.FC = () => {
     const { language } = useLanguage();
-    const { dispatch } = useGame();
+    const { endTutorial } = useGame();
     const t = translations[language];
 
     const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -17,7 +26,13 @@ const TutorialScreen: React.FC = () => {
     );
 
     return (
-        <div className="bg-gray-900 bg-opacity-80 backdrop-blur-md p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl mx-auto animate-fade-in">
+        <motion.div 
+            className="bg-gray-900 bg-opacity-80 backdrop-blur-md p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl mx-auto"
+            variants={screenVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+        >
             <h2 className="text-3xl font-bold font-serif text-center mb-6 text-amber-200">{t.tutorial_title}</h2>
             
             <div className="space-y-4">
@@ -30,13 +45,13 @@ const TutorialScreen: React.FC = () => {
 
             <div className="text-center mt-8">
                  <button
-                    onClick={() => dispatch({ type: 'END_TUTORIAL' })}
+                    onClick={endTutorial}
                     className="px-8 py-3 bg-red-800 text-white font-bold text-lg rounded-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
                 >
                     {t.tutorial_begin_adventure}
                 </button>
             </div>
-        </div>
+        </motion.div>
     );
 }
 
